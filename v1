@@ -1,0 +1,83 @@
+import numpy as np
+def duff_solv(
+    S, a, D, E, Lx, Ly, Nx, Ny):
+    """ additional Comments to be added later
+    """
+    x = np.linspace(0, Lx, Nx+1) # mesh points in x dir
+    y = np.linspace(0, Ly, Ny+1) # mesh points in y dir
+    dx = x[1] - x[0]
+    dy = y[1] - y[0]
+    u = np.zeros((Nx, Ny)) # Im guessing setting up 
+    u_n = np.zeros((Nx, Ny)) 
+    Ix = range(0, Nx+1)
+    Iy = range(0, Ny+1)
+    # Load initial condition into u_n
+    for i in Ix:
+        for j in Iy:
+            u_n[i,j] = S(x[i], y[j])
+    N = (Nx+1)*(Ny+1) # no of unknowns
+    A = np.zeros((N, N))
+    b = np.zeros(N)
+    m = lambda i, j: j*(Nx+1) + i     # look up what lambda does  
+    # Equations corresponding to j=0, i=0,1,... (u known)
+    j = 0
+    for i in Ix:
+        p = m(i,j); A[p, p] = 1
+    # Loop over all internal mesh points in y diretion
+    # and all mesh points in x direction
+    for j in Iy[1:-1]:
+        i = 0; p = m(i,j); A[p, p] = 1 # Boundary
+        for i in Ix[1:-1]: # Interior points
+            p = m(i,j)
+            A[p, m(i,j-1)] = -Fy  # fix for future use
+            A[p, m(i-1,j)] = Fx
+            A[p, p] = 1 + 2*(Fx+Fy)
+            A[p, m(i+1,j)] = - *Fx
+            A[p, m(i,j+1)] = - *Fy
+        i = Nx; p = m(i,j); A[p, p] = 1 # Boundary
+    # Equations corresponding to j=Ny, i=0,1,... (u known)
+    j = Ny
+    for i in Ix:
+        p = m(i,j); A[p, p] = 1
+    import scipy.linalg
+    
+    
+    for n in It[0:-1]:
+        # Solve linear system by SOR iteration 
+        u_[:,:] = u_n # Start value
+        converged = False #ignore 
+        r = 0
+        while not converged:
+            u__ = u
+            j = 0
+            for i in Ix:
+            u[i,j] = U_0y(t[n+1]) # Boundary (fix!!)
+                for j in Iy[1:-1]:
+                i = 0; u[i,j] = U_0x(t[n+1]) # Boundary (fix!!)
+                i = Nx; u[i,j] = U_Lx(t[n+1]) # Boundary (fix!!)
+                    for i in Ix[1:-1]:
+                        step = 0
+                        phi = initial_guess[:]
+                        residual = np.linalg.norm(np.matmul(A, phi) - b)  # Initial residual
+                        while residual > convergence_criteria:
+                            for i in range(A.shape[0]):
+                                sigma = 0
+                                for j in range(A.shape[1]):
+                                    if j != i:
+                                        sigma += A[i, j] * phi[j]
+                                phi[i] = (1 - omega) * phi[i] + (omega / A[i, i]) * (b[i] - sigma)
+                            residual = np.linalg.norm(np.matmul(A, phi) - b)
+                            step += 1
+                            print("Step {} Residual: {:10.6g}".format(step, residual))
+                        return phi                            #clean out for a custom SOR solution 
+                    for i in Ix:
+                    u[i,j] = U_Ly(t[n+1]) # boundary
+                    r += 1
+        converged = np.abs(u-u_).max() < tol or r >= max_iter
+        u_[:,:] = u
+        u_n, u = u, u_n # Get ready for next iteration
+ 
+
+    xv = x[:,np.newaxis]
+    yv = y[np.newaxis,:]
+    f_a = f(xv, yv)
